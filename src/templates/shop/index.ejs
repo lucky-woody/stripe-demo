@@ -3,44 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dice Shop</title>
+  <title>Dice Shop with Random Rotations & Click-Me Button</title>
 
   <style>
-    /* 1) Full-screen felt background */
+    /* Full-screen felt background or solid color */
     html, body {
       margin: 0; 
       padding: 0; 
       height: 100%;
-
-      /* Use your felt image path here. Adjust if your file is named differently. */
       background: url("/assets/images/felt_image.jpg") no-repeat center center fixed;
       background-size: cover;
     }
 
-    /* 2) Container with relative positioning so absolute buttons can be placed within it */
+    /* Container holds canvas + absolutely positioned buttons */
     #diceContainer {
       position: relative;
       width: 80%;
       max-width: 1200px;
-      height: 70vh;  /* or a fixed px height if you prefer */
-      margin: 60px auto; /* center on page with some top space */
-      /* border: 1px solid #999;  */
+      height: 70vh;  
+      margin: 60px auto;
+      border: 1px solid #999; 
       background: transparent; 
     }
-
     #diceCanvas {
       width: 100%; 
       height: 100%; 
       display: block;
-      background: transparent; /* so we see the felt image behind the 3D scene */
+      background: transparent;
     }
 
-    /* 3) A shared style for all dice buttons */
+    /* Shared button styles */
     .dice-button {
       position: absolute;
-      display: none; /* start hidden; we reveal it if the front face is a product face */
-      background: #000;   /* black button */
-      color: #fff;        /* white text */
+      display: none;
+      background: #000;
+      color: #fff;
       padding: 6px 12px;
       border: none;
       border-radius: 4px;
@@ -55,25 +52,31 @@
 
   <section id="diceContainer">
     <canvas id="diceCanvas"></canvas>
-    
-    <!-- 4 absolutely positioned buttons, one for each die -->
+
+    <!-- Four "Add to Cart" buttons, one per die -->
     <button id="addToCartButton1" class="dice-button">Add to Cart</button>
     <button id="addToCartButton2" class="dice-button">Add to Cart</button>
     <button id="addToCartButton3" class="dice-button">Add to Cart</button>
     <button id="addToCartButton4" class="dice-button">Add to Cart</button>
+
+    <!-- One special "Click Me" button just for Die #1 -->
+    <button id="clickMeButton1" class="dice-button">Click Me</button>
   </section>
 
-  <!-- Include Three.js and GSAP from CDN -->
+  <!-- Three.js and GSAP from CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
   <script>
   /************************************************************
-   * 1) Basic Scene & Camera Setup
+   * Global Setup
    ************************************************************/
+  let autoRotationActive = false; // We'll set to true after first user click
+  let autoRotationInterval = null; 
+  let hoveredDie = null;          // Which die is currently hovered (if any)
+
   const container = document.getElementById('diceContainer');
   const canvas = document.getElementById('diceCanvas');
-
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -109,8 +112,11 @@
   directionalLight.position.set(0, 1, 1);
   scene.add(directionalLight);
 
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
   /************************************************************
-   * 2) Create a Basic Box "Dice" with 6 Textures
+   * 1) Create a Basic Box "Dice" with 6 Textures
    ************************************************************/
   function createDiceWithImages(faceUrls, size = 10) {
     if (faceUrls.length !== 6) {
@@ -137,22 +143,21 @@
   }
 
   /************************************************************
-   * 3) Helper: figure out which face is front given rotation.y
-   *    For BoxGeometry: faces [4,0,5,1] as Y-rot goes 0, 90,180,270
+   * 2) getFrontFaceIndex(rotY)
+   *    For BoxGeometry: face order [4,0,5,1]
    ************************************************************/
   function getFrontFaceIndex(rotY) {
-    // Convert rotation to quarter-turn 0..3
     let quarterTurns = Math.round(rotY / (Math.PI / 2)) % 4;
     if (quarterTurns < 0) quarterTurns += 4;
-    // faceCycle = [ +Z(4), +X(0), -Z(5), -X(1) ]
     const faceCycle = [4, 0, 5, 1];
     return faceCycle[quarterTurns];
   }
 
   /************************************************************
-   * 4) Create Four Dice
-   *    We'll assume face #4 (+Z) is the product face for each
-   *    local anchor => near bottom center => (0, -4, +5)
+   * 3) We'll have "productFace" for each die = 4 (+Z).
+   *    We'll store two anchors:
+   *      - productAnchor (bottom center)
+   *      - clickMeAnchor (top center) for Die #1
    ************************************************************/
   const diceFaceUrls = [
     '/assets/images/dice/dice-one.png',
@@ -163,32 +168,42 @@
     '/assets/images/dice/dice-six.png'
   ];
 
-  function createDiceData(buttonId) {
+  function createDiceData(buttonId, clickMeButtonId=null) {
     const dice = createDiceWithImages(diceFaceUrls, 10);
-    // We'll store a userData object with productFace=4, productAnchor near bottom
-    const anchor = new THREE.Vector3(0, -4, 5); // local coords
+    const productAnchor = new THREE.Vector3(0, -4, 5); // near bottom
+    const clickMeAnchor = new THREE.Vector3(0, 4, 5); // near top
+
     dice.userData = {
-      buttonId: buttonId,
+      productFace: 4,
+      productAnchor: productAnchor,
+      buttonId: buttonId,        // for "Add to Cart"
+      
+      clickMeFace: 4,            // we only show "Click Me" if front face is #4
+      clickMeAnchor: clickMeAnchor,
+      clickMeButtonId: clickMeButtonId,
+
       rotationTween: null,
-      targetRotation: 0,
-      productFace: 4,   
-      productAnchor: anchor
+      targetRotation: 0
     };
     return dice;
   }
 
-  const dice1 = createDiceData("addToCartButton1");
+  // Die #1: top-left with a "Click Me" button
+  const dice1 = createDiceData("addToCartButton1", "clickMeButton1");
   dice1.position.set(-7, 7, 0);
   scene.add(dice1);
 
+  // Die #2: top-right
   const dice2 = createDiceData("addToCartButton2");
   dice2.position.set(7, 7, 0);
   scene.add(dice2);
 
+  // Die #3: bottom-left
   const dice3 = createDiceData("addToCartButton3");
   dice3.position.set(-7, -7, 0);
   scene.add(dice3);
 
+  // Die #4: bottom-right
   const dice4 = createDiceData("addToCartButton4");
   dice4.position.set(7, -7, 0);
   scene.add(dice4);
@@ -196,12 +211,9 @@
   const diceArray = [dice1, dice2, dice3, dice4];
 
   /************************************************************
-   * 5) Raycaster => rotate on click by 90° around Y
+   * 4) Hover detection via mousemove
    ************************************************************/
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-
-  canvas.addEventListener('click', (event) => {
+  function checkHover(event) {
     const rect = canvas.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -210,61 +222,95 @@
     const intersects = raycaster.intersectObjects(diceArray);
 
     if (intersects.length > 0) {
-      const clickedDice = intersects[0].object;
+      hoveredDie = intersects[0].object;
+    } else {
+      hoveredDie = null;
+    }
+  }
+  canvas.addEventListener('mousemove', checkHover);
 
-      if (clickedDice.userData.targetRotation === undefined) {
-        clickedDice.userData.targetRotation = clickedDice.rotation.y;
+  /************************************************************
+   * 5) onClick => rotate 90° around Y
+   *    Also, if autoRotation not active, start the setInterval
+   ************************************************************/
+  canvas.addEventListener('click', (event) => {
+    // First check which die is clicked
+    checkHover(event); 
+    if (!hoveredDie) return;
+
+    const clickedDice = hoveredDie;
+    if (clickedDice.userData.targetRotation === undefined) {
+      clickedDice.userData.targetRotation = clickedDice.rotation.y;
+    }
+    clickedDice.userData.targetRotation += Math.PI / 2;
+
+    if (clickedDice.userData.rotationTween) {
+      clickedDice.userData.rotationTween.kill();
+    }
+
+    const remaining = clickedDice.userData.targetRotation - clickedDice.rotation.y;
+    const duration = Math.abs(remaining) / (Math.PI / 2);
+
+    clickedDice.userData.rotationTween = gsap.to(clickedDice.rotation, {
+      duration: duration,
+      y: clickedDice.userData.targetRotation,
+      ease: "power2.out",
+      onUpdate: () => {
+        updateButtonsPosition(clickedDice);
+      },
+      onComplete: () => {
+        updateButtonsPosition(clickedDice);
+        clickedDice.userData.rotationTween = null;
       }
-      clickedDice.userData.targetRotation += Math.PI / 2;
+    });
 
-      // kill existing tween if any
-      if (clickedDice.userData.rotationTween) {
-        clickedDice.userData.rotationTween.kill();
-      }
-
-      const remaining = clickedDice.userData.targetRotation - clickedDice.rotation.y;
-      const duration = Math.abs(remaining) / (Math.PI / 2);
-
-      // Rotate, updating the button position during animation
-      clickedDice.userData.rotationTween = gsap.to(clickedDice.rotation, {
-        duration: duration,
-        y: clickedDice.userData.targetRotation,
-        ease: "power2.out",
-        onUpdate: () => {
-          updateDiceButtonPosition(clickedDice);
-        },
-        onComplete: () => {
-          updateDiceButtonPosition(clickedDice);
-          clickedDice.userData.rotationTween = null;
-        }
-      });
+    // If this is the first click in the entire scene, start auto-rotation
+    if (!autoRotationActive) {
+      autoRotationActive = true;
+      startAutoRotation();
     }
   });
 
   /************************************************************
-   * 6) updateDiceButtonPosition(dice):
-   *    if frontFace=productFace => project anchor => show button
-   *    else hide
-   *    Move the button up a bit by adjusting anchor or top
+   * 6) updateButtonsPosition(die)
+   *    Positions:
+   *      - Add to Cart button if frontFace == productFace
+   *      - Click Me button if frontFace == clickMeFace (and if that button exists)
    ************************************************************/
-  function updateDiceButtonPosition(dice) {
-    const btn = document.getElementById(dice.userData.buttonId);
-    if (!btn) return;
+  function updateButtonsPosition(die) {
+    const frontFaceIndex = getFrontFaceIndex(die.rotation.y);
 
-    // Which face is front?
-    const frontFaceIndex = getFrontFaceIndex(dice.rotation.y);
-    if (frontFaceIndex !== dice.userData.productFace) {
-      // Not the product face => hide button
-      btn.style.display = 'none';
-      return;
+    // 6.1) Product button
+    const btn = document.getElementById(die.userData.buttonId);
+    if (btn) {
+      if (frontFaceIndex === die.userData.productFace) {
+        btn.style.display = 'block';
+        projectAnchor(die, die.userData.productAnchor, btn, -10); 
+      } else {
+        btn.style.display = 'none';
+      }
     }
 
-    // It's the product face => show
-    btn.style.display = 'block';
+    // 6.2) "Click Me" button (only for dice1 if it has clickMeButtonId)
+    if (die.userData.clickMeButtonId) {
+      const clickBtn = document.getElementById(die.userData.clickMeButtonId);
+      if (clickBtn) {
+        if (frontFaceIndex === die.userData.clickMeFace) {
+          clickBtn.style.display = 'block';
+          projectAnchor(die, die.userData.clickMeAnchor, clickBtn, -10);
+        } else {
+          clickBtn.style.display = 'none';
+        }
+      }
+    }
+  }
 
-    // Project the local anchor
-    const anchorLocal = dice.userData.productAnchor; 
-    const worldPos = dice.localToWorld(anchorLocal.clone());
+  /************************************************************
+   * 7) projectAnchor(die, localAnchor, button, offsetY)
+   *    Projects localAnchor -> screen coords, sets button position
+   ************************************************************/
+  function projectAnchor(die, localAnchor, button, extraOffsetY=0) {
+    const worldPos = die.localToWorld(localAnchor.clone());
     const screenPos = worldPos.clone();
     screenPos.project(camera);
 
@@ -273,21 +319,74 @@
     const x = (screenPos.x + 1) / 2 * w;
     const y = (-screenPos.y + 1) / 2 * h;
 
-    // Position the button
-    const rect = btn.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
     const bw = rect.width;
     const bh = rect.height;
-    // Subtract half the button's width/height so it's centered on the anchor
-    // Optionally move it up by 10px more
-    btn.style.left = (x - bw/2) + 'px';
-    btn.style.top  = (y - bh/2 - 10) + 'px'; 
+
+    button.style.left = (x - bw/2) + 'px';
+    button.style.top  = (y - bh/2 + extraOffsetY) + 'px';
   }
 
   /************************************************************
-   * 7) Button Click => "Add to Cart"
+   * 8) Start auto-rotation => every 7 seconds
+   *    - pick a random die
+   *    - if hovered, skip or pick another
+   *    - random rotation
    ************************************************************/
-  const btnIds = ["addToCartButton1","addToCartButton2","addToCartButton3","addToCartButton4"];
-  btnIds.forEach(id => {
+  function startAutoRotation() {
+    autoRotationInterval = setInterval(() => {
+      // pick a random die
+      const randomIndex = Math.floor(Math.random() * diceArray.length);
+      const chosenDie = diceArray[randomIndex];
+
+      // If that die is hovered, skip or pick another. 
+      // (Simplest approach: skip this cycle if hovered. 
+      //  If you want to keep picking another, you'd do a loop.)
+      if (chosenDie === hoveredDie) {
+        console.log("Skipped auto-rotate because chosen die is hovered.");
+        return;
+      }
+
+      // Perform a random rotation (like +1 quarter turn or +2?)
+      const randomQuarterTurns = Math.floor(Math.random() * 3) + 1; 
+      // 1 => 90°, 2 => 180°, 3 => 270° around Y
+      const angleIncrement = randomQuarterTurns * (Math.PI / 2);
+
+      if (chosenDie.userData.rotationTween) {
+        chosenDie.userData.rotationTween.kill();
+      }
+
+      if (chosenDie.userData.targetRotation === undefined) {
+        chosenDie.userData.targetRotation = chosenDie.rotation.y;
+      }
+      chosenDie.userData.targetRotation += angleIncrement;
+
+      const remaining = chosenDie.userData.targetRotation - chosenDie.rotation.y;
+      const duration = Math.abs(remaining) / (Math.PI / 2);
+
+      chosenDie.userData.rotationTween = gsap.to(chosenDie.rotation, {
+        duration: duration,
+        y: chosenDie.userData.targetRotation,
+        ease: "power2.out",
+        onUpdate: () => {
+          updateButtonsPosition(chosenDie);
+        },
+        onComplete: () => {
+          updateButtonsPosition(chosenDie);
+          chosenDie.userData.rotationTween = null;
+        }
+      });
+    }, 7000);
+  }
+
+  /************************************************************
+   * 9) Button Clicks 
+   *    - Add to Cart: just an alert for now
+   *    - Click Me: also just an alert or something 
+   *      (you can hide the button after click if you want)
+   ************************************************************/
+  // Add to Cart
+  ["addToCartButton1","addToCartButton2","addToCartButton3","addToCartButton4"].forEach(id => {
     const b = document.getElementById(id);
     b.addEventListener('click', (evt) => {
       evt.stopPropagation();
@@ -295,9 +394,17 @@
     });
   });
 
+  // "Click Me" on Die #1
+  const clickMeBtn = document.getElementById("clickMeButton1");
+  clickMeBtn.addEventListener("click", (evt) => {
+    evt.stopPropagation();
+    alert("You clicked the 'Click Me' button on the first die!");
+    // If you want, hide it after first click:
+    // clickMeBtn.style.display = 'none';
+  });
+
   /************************************************************
-   * 8) Animate + Show Buttons If Starting on Product Face
-   *    We call updateDiceButtonPosition on each dice initially
+   * 10) Animation + Initial Positioning
    ************************************************************/
   function animate() {
     requestAnimationFrame(animate);
@@ -305,10 +412,11 @@
   }
   animate();
 
-  // If a die starts on face #4, show button from the start
-  diceArray.forEach(d => {
-    updateDiceButtonPosition(d);
+  // Position all buttons from the start
+  diceArray.forEach(die => {
+    updateButtonsPosition(die);
   });
   </script>
+
 </body>
 </html>
