@@ -1,0 +1,35 @@
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #C5A6E0; /* Light Lavender */
+}
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #7547A6; /* Deep Violet */
+  padding: 1rem;
+}
+
+.site-logo {
+  height: 50px;
+}
+
+/* Product Grid Styling */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.product-item {
+  background-color: #FFFFFF; /* Crisp White */
+  border: 1px solid #D06F6F; /* Muted Rose */
+  text-align: center;
+  padding: 1rem;
+  font-weight: bold;
+} 
