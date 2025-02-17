@@ -1,3 +1,4 @@
+/* src/assets/css/style.css */
 /* Global Styles */
 body {
   margin: 0;
@@ -13,6 +14,7 @@ body {
   background-color: #4a90e2; /* Change to your desired color */
   padding: 1rem 2rem;
   width: 100%;
+  height: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   margin: 0;
   /* Optional: Fix the header to the top of the viewport */
@@ -24,7 +26,7 @@ body {
 
 /* Add a top margin to the main content to prevent it from being hidden under the fixed header */
 main {
-  margin-top: 80px; /* Adjust according to your header's height */
+  /* margin-top: 500px; Adjust according to your header's height */
 }
 
 /* Site Logo */
@@ -46,4 +48,13 @@ main {
   text-align: center;
   padding: 1rem;
   font-weight: bold;
+}
+#diceContainer {
+  position: relative;
+  height: 750px; /* Changed from 700px to 600px */
+  width: 900px;
+  max-width: 1280px;
+  margin: 70px auto 0;
+  background-color: #f0f0f0; /* New background color if desired */
+  border: 1px solid #ccc
 }
