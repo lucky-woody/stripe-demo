@@ -10,10 +10,24 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #7547A6; /* Deep Violet */
-  padding: 1rem;
+  background-color: #4a90e2; /* Change to your desired color */
+  padding: 1rem 2rem;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  /* Optional: Fix the header to the top of the viewport */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
+/* Add a top margin to the main content to prevent it from being hidden under the fixed header */
+main {
+  margin-top: 80px; /* Adjust according to your header's height */
+}
+
+/* Site Logo */
 .site-logo {
   height: 50px;
 }
@@ -32,4 +46,4 @@ body {
   text-align: center;
   padding: 1rem;
   font-weight: bold;
-} 
+}

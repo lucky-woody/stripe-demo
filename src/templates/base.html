@@ -1,3 +1,4 @@
+<!-- src/templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,14 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Store Front</title>
   <link rel="stylesheet" href="/assets/css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+    }
+  }
+  </script>
 </head>
 <body>
   <header class="top-bar">
     <div class="nav-left">
       <!-- Future navigation items -->
+      <a href="/shop" style="color:#FFF; text-decoration:none;">Shop</a>
     </div>
     <div class="nav-center">
-      <img src="/assets/images/logo.png" alt="Site Logo" class="site-logo">
+      <!-- Temporarily commenting out logo image to prevent 404 errors -->
+      <!-- <img src="/assets/images/logo.png" alt="Site Logo" class="site-logo"> -->
     </div>
     <div class="nav-right">
       <!-- Future navigation items -->
@@ -28,4 +38,4 @@
     <!-- Footer content -->
   </footer>
 </body>
-</html> 
+</html>
