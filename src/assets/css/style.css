@@ -85,6 +85,10 @@ main {
   width: 900px;
   max-width: 1280px;
   margin: 70px auto 0;
-  background-color: #f0f0f0; /* New background color if desired */
+  background: transparent;
   border: 1px solid #ccc
+}
+
+#diceCanvas {
+  background: transparent;
 }
