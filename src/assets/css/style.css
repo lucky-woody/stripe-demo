@@ -81,12 +81,13 @@ main {
 }
 #diceContainer {
   position: relative;
-  height: 750px; /* Changed from 700px to 600px */
+  height: 750px; /* Adjust as needed */
   width: 900px;
   max-width: 1280px;
   margin: 70px auto 0;
-  background: transparent;
-  border: 1px solid #ccc
+  /* background: url("/assets/images/felt_image.jpg") no-repeat center center; /* Match the body background */
+  /*background-size: cover !important; Ensure it covers the entire container */
+  border: 1px solid #ccc; /* Optional: keep the border for visual separation */
 }
 
 #diceCanvas {
