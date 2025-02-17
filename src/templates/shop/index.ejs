@@ -66,7 +66,7 @@
     0.1,
     1000
   );
-  camera.position.set(0, 0, 34);
+  camera.position.set(0, 0, 36);
   
   // const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   const renderer = new THREE.WebGLRenderer({
@@ -103,7 +103,7 @@
   // ----------------------------------------------------------------------
   // Dice Creation with Images
   // ----------------------------------------------------------------------
-  function createDiceWithImages(faceUrls, diceSize = 9, diceLabel = "Dice") {
+  function createDiceWithImages(faceUrls, diceSize = 10, diceLabel = "Dice") {
     // Expect exactly 6 image URLs for the 6 faces of a box
     if (faceUrls.length !== 6) {
       console.warn("createDiceWithImages requires exactly 6 image URLs. Received:", faceUrls);
@@ -165,7 +165,7 @@
     '/assets/images/dice/dice-five.png',
     '/assets/images/dice/dice-six.png'
   ];
-  const dice1 = createDiceWithImages(dice1FaceUrls, 9, "Dice1");
+  const dice1 = createDiceWithImages(dice1FaceUrls, 10, "Dice1");
   dice1.userData.product = "Dice 1 Product";
   
   
@@ -179,7 +179,7 @@
   ];
 
   
-  const dice2 = createDiceWithImages(dice2FaceUrls, 9, "Dice2");
+  const dice2 = createDiceWithImages(dice2FaceUrls, 10, "Dice2");
   dice2.userData.product = "Dice 2 Product";
   
   const dice3FaceUrls = [
@@ -190,7 +190,7 @@
     '/assets/images/dice/dice-five.png',
     '/assets/images/dice/dice-six.png'
   ]; // fill in actual paths
-  const dice3 = createDiceWithImages(dice3FaceUrls, 9, "Dice3");
+  const dice3 = createDiceWithImages(dice3FaceUrls, 10, "Dice3");
   dice3.userData.product = "Dice 3 Product";
   
   const dice4FaceUrls = [
@@ -201,7 +201,7 @@
     '/assets/images/dice/dice-five.png',
     '/assets/images/dice/dice-six.png'
   ]; // fill in actual paths
-  const dice4 = createDiceWithImages(dice4FaceUrls, 9, "Dice4");
+  const dice4 = createDiceWithImages(dice4FaceUrls, 10, "Dice4");
   dice4.userData.product = "Dice 4 Product";
   
   // Position them
@@ -264,7 +264,7 @@
   // Position the "Add to Cart" button on the front face
   // ----------------------------------------------------------------------
   function updateAddToCartButtonPosition(dice) {
-    const diceSize = 9;
+    const diceSize = 12;
     const halfSize = diceSize / 2;
     const localPoint = new THREE.Vector3(0, 0, halfSize);
     const worldPoint = dice.localToWorld(localPoint.clone());

@@ -1,11 +1,20 @@
 /* src/assets/css/style.css */
 /* Global Styles */
+
+/* Ensure the body takes up the full height of the viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+
 body {
   margin: 0;
   padding: 0;
   background: url("/assets/images/felt_image.jpg") no-repeat center center;
   background-size: cover;;
-  
 }
 
 /* Top Bar */
@@ -56,7 +65,8 @@ body {
 
 /* Add a top margin to the main content to prevent it from being hidden under the fixed header */
 main {
-  /* margin-top: 500px; Adjust according to your header's height */
+  padding-top: 50px;
+  min-height: calc(100vh - 50px);
 }
 
 /* Site Logo */
@@ -81,15 +91,21 @@ main {
 }
 #diceContainer {
   position: relative;
-  height: 750px; /* Adjust as needed */
-  width: 900px;
+
+  /* Center Horizontally, with some left/right margin */
+  width: 80%;
+  max-width: 1280px;
+  margin: 20px auto;
+
+  min-height: 85vh;
+  
   max-width: 1280px;
   margin: 70px auto 0;
   /* background: url("/assets/images/felt_image.jpg") no-repeat center center; /* Match the body background */
   /*background-size: cover !important; Ensure it covers the entire container */
-  border: 1px solid #ccc; /* Optional: keep the border for visual separation */
+  /* border: 1px solid #ccc;  */
 }
 
 #diceCanvas {
-  background: transparent;
+  background: transparent; /* Ensure the canvas is transparent */
 }
