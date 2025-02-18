@@ -1,11 +1,13 @@
 <!-- src/templates/partials/headers.ejs -->
-<div class="nav-left">
-    <a href="/shop">Shop</a>
-  </div>
-  <div class="nav-center">
-    <!-- Temporarily commenting out the logo image -->
-    <!-- <img src="/assets/images/logo.png" alt="Site Logo" class="site-logo"> -->
+<header class="top-bar">
+  <div class="nav-left">
+    <a href="/shop" class="nav-link">Shop</a>
+    <a href="/admin" class="nav-link">Admin</a>
+    <a href="https://github.com/YourUser/YourRepo" class="nav-link" target="_blank">GitHub</a>
   </div>
   <div class="nav-right">
-    <!-- Future navigation items -->
+    <button id="checkoutButton" class="checkout-btn">
+      Checkout <span id="cartCount">(0)</span>
+    </button>
   </div>
+</header>

@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dice Shop - Mixed Faces & Modified “Click Me” Behavior</title>
 
+  <!-- Load Roboto from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" 
+    rel="stylesheet">
+  
   <style>
     /* Full-screen felt background or a solid color */
     html, body {
@@ -22,7 +29,7 @@
       max-width: 1200px;
       height: 70vh;  
       margin: 60px auto;
-      /* border: 1px solid #999;  */
+      /* border: 1px solid #999; */
       background: transparent; 
     }
     #diceCanvas {
@@ -33,19 +40,7 @@
     }
 
     /* Shared button styles */
-    .dice-button {
-      position: absolute;
-      display: none;
-      background: #000;
-      color: #fff;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      font-family: Roboto;
-      font-size: 14px;
-      text-align: center;
-      cursor: pointer;
-    }
+    
   </style>
 </head>
 <body>
@@ -156,64 +151,59 @@
 
   /************************************************************
    * 3) Face Arrays for Each Die
-   *    Mix up the numeric faces so they differ
-   *    but keep +Z = product
+   *    Mix up numeric faces but keep +Z=product
    ************************************************************/
-
-  // Die #1 (same as your original example: +X=3, -X=4, +Y=1, -Y=6, +Z=product-1, -Z=5)
+  // Die #1
   const dice1FaceUrls = [
-    '/assets/images/dice/dice-three.png',  // +X
-    '/assets/images/dice/dice-four.png',   // -X
-    '/assets/images/dice/dice-one.png',    // +Y
-    '/assets/images/dice/dice-six.png',    // -Y
-    '/assets/images/dice/dice-product-1.png', // +Z
-    '/assets/images/dice/dice-five.png'    // -Z
+    '/assets/images/dice/dice-three.png',
+    '/assets/images/dice/dice-four.png',
+    '/assets/images/dice/dice-one.png',
+    '/assets/images/dice/dice-six.png',
+    '/assets/images/dice/dice-product-1.png',
+    '/assets/images/dice/dice-five.png'
   ];
-
-  // Die #2 => +X=2, -X=5, +Y=1, -Y=6, +Z=product-2, -Z=4
+  // Die #2
   const dice2FaceUrls = [
-    '/assets/images/dice/dice-two.png',   // +X
-    '/assets/images/dice/dice-five.png',  // -X
-    '/assets/images/dice/dice-one.png',   // +Y
-    '/assets/images/dice/dice-six.png',   // -Y
-    '/assets/images/dice/dice-product-2.png', // +Z
-    '/assets/images/dice/dice-four.png'   // -Z
+    '/assets/images/dice/dice-two.png',
+    '/assets/images/dice/dice-five.png',
+    '/assets/images/dice/dice-one.png',
+    '/assets/images/dice/dice-six.png',
+    '/assets/images/dice/dice-product-2.png',
+    '/assets/images/dice/dice-four.png'
   ];
-
-  // Die #3 => +X=4, -X=3, +Y=2, -Y=5, +Z=product-3, -Z=1
+  // Die #3
   const dice3FaceUrls = [
-    '/assets/images/dice/dice-four.png', // +X
-    '/assets/images/dice/dice-three.png',// -X
-    '/assets/images/dice/dice-two.png',  // +Y
-    '/assets/images/dice/dice-five.png', // -Y
-    '/assets/images/dice/dice-product-3.png', // +Z
-    '/assets/images/dice/dice-one.png'   // -Z
+    '/assets/images/dice/dice-four.png',
+    '/assets/images/dice/dice-three.png',
+    '/assets/images/dice/dice-two.png',
+    '/assets/images/dice/dice-five.png',
+    '/assets/images/dice/dice-product-3.png',
+    '/assets/images/dice/dice-one.png'
   ];
-
-  // Die #4 => +X=6, -X=1, +Y=3, -Y=4, +Z=product-4, -Z=2
+  // Die #4
   const dice4FaceUrls = [
-    '/assets/images/dice/dice-six.png',   // +X
-    '/assets/images/dice/dice-one.png',   // -X
-    '/assets/images/dice/dice-three.png', // +Y
-    '/assets/images/dice/dice-four.png',  // -Y
-    '/assets/images/dice/dice-product-4.png', // +Z
-    '/assets/images/dice/dice-two.png'    // -Z
+    '/assets/images/dice/dice-six.png',
+    '/assets/images/dice/dice-one.png',
+    '/assets/images/dice/dice-three.png',
+    '/assets/images/dice/dice-four.png',
+    '/assets/images/dice/dice-product-4.png',
+    '/assets/images/dice/dice-two.png'
   ];
 
   /************************************************************
    * 4) createDiceData => store anchors
-   *    Move "Click Me" anchor even higher => (0,5,5)
+   *    "Click Me" anchor => (0,3.5,5)
    ************************************************************/
   function createDiceData(faceUrls, buttonId, clickMeButtonId=null) {
     const dice = createDiceWithImages(faceUrls, 10);
 
     // Product anchor near bottom
-    const productAnchor = new THREE.Vector3(0, -4, 5);
-    // Move the "Click Me" anchor further up => (0,5,5)
+    const productAnchor = new THREE.Vector3(0, -3.5, 5);
+    // "Click Me" anchor a bit higher => (0,3.5,5)
     const clickMeAnchor = new THREE.Vector3(0, 3.5, 5);
 
     dice.userData = {
-      productFace: 4,  // +Z
+      productFace: 4,  
       productAnchor: productAnchor,
       buttonId: buttonId,
       
@@ -228,7 +218,7 @@
     return dice;
   }
 
-  // Die #1 => Has the "Click Me"
+  // Create 4 dice
   const dice1 = createDiceData(dice1FaceUrls, "addToCartButton1", "clickMeButton1");
   dice1.position.set(-7, 7, 0);
   scene.add(dice1);
@@ -248,12 +238,8 @@
   const diceArray = [dice1, dice2, dice3, dice4];
 
   /************************************************************
-   * 5) Give dice2, dice3, dice4 initial rotations
-   *    so they do NOT start on product side
+   * 5) Give dice2, dice3, dice4 initial rotations 
    ************************************************************/
-  // e.g. dice2 => 90° (front => +X),
-  //      dice3 => 180° (front => -Z),
-  //      dice4 => -90° (front => -X).
   dice2.rotation.y =  Math.PI / 2; 
   dice3.rotation.y =  Math.PI;     
   dice4.rotation.y = -Math.PI / 2;
@@ -306,19 +292,17 @@
 
   /************************************************************
    * 8) canvas.addEventListener('click')
-   *    => if user clicks a die, rotate it, 
-   *       if it's die1 => hide "Click Me", start auto-rotation
    ************************************************************/
   canvas.addEventListener('click', (event) => {
     checkHover(event);
     if (!hoveredDie) return;
 
-    // If user clicked die1, permanently hide "Click Me"
+    // If user clicked die1 => hide "Click Me"
     if (hoveredDie === dice1 && !dice1.userData.clickMeUsed) {
       dice1.userData.clickMeUsed = true;
     }
 
-    // Rotate the hovered die
+    // Rotate hovered die
     rotateDice(hoveredDie, 1);
 
     // If auto-rotation not active, start it
@@ -350,15 +334,12 @@
       const clickBtn = document.getElementById(die.userData.clickMeButtonId);
       if (!clickBtn) return;
 
-      // If we've hidden it, don't show again
       if (die.userData.clickMeUsed) {
         clickBtn.style.display = 'none';
         return;
       }
-
       if (frontFaceIndex === die.userData.clickMeFace) {
         clickBtn.style.display = 'block';
-        // anchor is (0,5,5) => even higher
         projectAnchor(die, die.userData.clickMeAnchor, clickBtn, 0);
       } else {
         clickBtn.style.display = 'none';
@@ -410,10 +391,7 @@
 
   /************************************************************
    * 12) Button Listeners
-   *     - Add to Cart
-   *     - "Click Me" => revolve dice1, hide button, start auto-rotation
    ************************************************************/
-  // Add to Cart
   ["addToCartButton1","addToCartButton2","addToCartButton3","addToCartButton4"].forEach(id => {
     const b = document.getElementById(id);
     b.addEventListener('click', (evt) => {
@@ -449,7 +427,7 @@
   }
   animate();
 
-  // Do an initial button update, so the new rotations reflect right away
+  // Do an initial button update
   diceArray.forEach(die => {
     updateButtonsPosition(die);
   });
