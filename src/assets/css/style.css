@@ -1,6 +1,6 @@
 /* src/assets/css/style.css */
 
-/* Ensure body takes up the full viewport, with felt background */
+/* Ensure the body takes up full viewport, with felt background */
 html, body {
   height: 100%;
   margin: 0;
@@ -10,15 +10,14 @@ html, body {
 body {
   background: url("/assets/images/felt_image.jpg") no-repeat center center fixed;
   background-size: cover;
-  /* Ensure the entire site uses Roboto by default */
+  /* entire site uses Roboto */
   font-family: 'Roboto', sans-serif;
-  /* If you generally want white text, or change as needed */
-  color: #fff; /* Generally using white text */
+  /* Default text color */
+  color: #fff; 
 }
 
-/* Top Bar (Header) */
+/* Top Bar Styles */
 .top-bar {
-  /* black bar */
   background-color: #000;
   color: #fff;
   display: flex;
@@ -42,17 +41,19 @@ body {
 .nav-right {
   display: flex;
   align-items: center;
-  margin-right: 3rem;
+  margin-right: 3rem; 
 }
 
+/* Nav links: Shop, Admin, GitHub */
 .nav-link {
   font-size: 18px; 
   color: #fff;
   text-decoration: none;
   /* spacing between links */
-  margin-right: 1.5rem; 
+  margin-right: 1.5rem;
 }
 
+/* Checkout button on the right */
 .checkout-btn {
   font-size: 16px;
   background: #000;
@@ -69,18 +70,20 @@ body {
 
 /* Main content is pushed below the fixed header */
 main {
-  padding-top: 70px;
+  margin-top: 70px;
   min-height: calc(100vh - 70px);
 }
 
-/* The dice container and canvas */
+/* Dice Container & Canvas */
 #diceContainer {
   position: relative;
   width: 80%;
   max-width: 1280px;
-  height: 70vh;  
-  margin: 60px auto; 
-  background: transparent; 
+  /* Large min-height keeps scale of dice*/
+  min-height: 85vh;
+
+  margin: 70px auto 0;
+  background: transparent;
 }
 
 #diceCanvas {
@@ -90,7 +93,7 @@ main {
   background: transparent;
 }
 
-/* 5) Dice Buttons (Add to Cart, Click Me) */
+/* Dice Buttons (Add to Cart, Click Me) */
 .dice-button {
   position: absolute;
   display: none;
