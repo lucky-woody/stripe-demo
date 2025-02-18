@@ -1,5 +1,6 @@
 /* src/assets/css/style.css */
-/* Ensure the body takes up the full height of the viewport */
+
+/* Ensure body takes up the full viewport, with felt background */
 html, body {
   height: 100%;
   margin: 0;
@@ -7,53 +8,52 @@ html, body {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: url("/assets/images/felt_image.jpg") no-repeat center center;
-  background-size: cover;;
+  background: url("/assets/images/felt_image.jpg") no-repeat center center fixed;
+  background-size: cover;
+  /* Ensure the entire site uses Roboto by default */
+  font-family: 'Roboto', sans-serif;
+  /* If you generally want white text, or change as needed */
+  color: #fff; /* Generally using white text */
 }
 
+/* Top Bar (Header) */
 .top-bar {
-  background-color: #000;   /* black bar */
+  /* black bar */
+  background-color: #000;
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  /* If you want it fixed at the top */
-  position: fixed;
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
 }
 
-/* Left nav links */
+/* Left side nav container */
 .nav-left {
   display: flex;
   align-items: center;
 }
 
+/* Right side nav container */
 .nav-right {
   display: flex;
   align-items: center;
-
-  /* This pushes .nav-right away from the right edge if you want a direct margin: */
-  margin-right: 3rem; 
+  margin-right: 3rem;
 }
 
-/* Make the links white, larger, with spacing, in Roboto font */
 .nav-link {
-  font-family: 'Roboto', sans-serif; /* use Roboto */
-  font-size: 18px;                  /* bigger text size */
+  font-size: 18px; 
   color: #fff;
   text-decoration: none;
-  margin-right: 1.5rem;            /* spacing between links */
+  /* spacing between links */
+  margin-right: 1.5rem; 
 }
 
-
 .checkout-btn {
-  font-family: 'Roboto', sans-serif;
   font-size: 16px;
   background: #000;
   color: #fff;
@@ -64,73 +64,45 @@ body {
 }
 
 .checkout-btn:hover {
-  background: #333; /* same darker hover effect */
+  background: #333; 
 }
 
-/* Add a top margin to the main content to prevent it from being hidden under the fixed header */
+/* Main content is pushed below the fixed header */
 main {
-  padding-top: 50px;
-  min-height: calc(100vh - 50px);
+  padding-top: 70px;
+  min-height: calc(100vh - 70px);
 }
 
-/* Site Logo */
-/* .site-logo {
-  height: 50px;
-} */
-
-/* Product Grid Styling */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.product-item {
-  background-color: #FFFFFF; /* Crisp White */
-  border: 1px solid #D06F6F; /* Muted Rose */
-  text-align: center;
-  padding: 1rem;
-  font-weight: bold;
-}
+/* The dice container and canvas */
 #diceContainer {
   position: relative;
-
-  /* Center Horizontally, with some left/right margin */
   width: 80%;
   max-width: 1280px;
-  margin: 20px auto;
-
-  min-height: 85vh;
-  
-  max-width: 1280px;
-  margin: 70px auto 0;
-  /* background: url("/assets/images/felt_image.jpg") no-repeat center center; /* Match the body background */
-  /*background-size: cover !important; Ensure it covers the entire container */
-  /* border: 1px solid #ccc;  */
+  height: 70vh;  
+  margin: 60px auto; 
+  background: transparent; 
 }
 
 #diceCanvas {
-  background: transparent; /* Ensure the canvas is transparent */
+  width: 100%; 
+  height: 100%; 
+  display: block;
+  background: transparent;
 }
 
+/* 5) Dice Buttons (Add to Cart, Click Me) */
 .dice-button {
   position: absolute;
   display: none;
-
-  /* Match the checkout button’s style */
-  font-family: 'Roboto', sans-serif;
   font-size: 16px;
-  background: #000;    /* black background */
-  color: #fff;         /* white text */
+  background: #000;  
+  color: #fff;
   border: 1px solid #fff;
   border-radius: 4px;
   padding: 8px 16px;
   cursor: pointer;
 }
 
-/* Inverted on hover */
 .dice-button:hover {
-  background: #333;  /* darker black, but not a full invert */
+  background: #333; 
 }
-
